@@ -345,7 +345,7 @@ void ReverseIndex<IndexType, ColumnType>::buildIndex()
     if constexpr (use_saved_hash)
         state.saved_hash_column = &saved_hash->getData();
 
-    using IteratorType = typename IndexMapType::iterator;
+    using IteratorType = typename IndexMapType::MappedPtr;
     IteratorType iterator;
     bool inserted;
 
@@ -385,7 +385,7 @@ UInt64 ReverseIndex<IndexType, ColumnType>::insert(const StringRef & data)
     if (!index)
         buildIndex();
 
-    using IteratorType = typename IndexMapType::iterator;
+    using IteratorType = typename IndexMapType::MappedPtr;
     IteratorType iterator;
     bool inserted;
 
@@ -402,7 +402,8 @@ UInt64 ReverseIndex<IndexType, ColumnType>::insert(const StringRef & data)
     else
         column->insertData(data.data, data.size);
 
-    index->emplace(num_rows + base_index, iterator, inserted, hash, data);
+    const UInt64 key = num_rows + base_index;
+    index->emplace(key, iterator, inserted, hash, data);
 
     if constexpr (use_saved_hash)
     {
@@ -415,7 +416,7 @@ UInt64 ReverseIndex<IndexType, ColumnType>::insert(const StringRef & data)
             column->popBack(1);
     }
 
-    return iterator->getKey();
+    return key;
 }
 
 template <typename IndexType, typename ColumnType>
