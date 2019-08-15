@@ -77,6 +77,7 @@ namespace
         using Base::key;
         using Base::keyEquals;
         using Base::isZero;
+        //using Base::getKey;
 
         template <typename T>
         static bool isZero(const T &, const State & /*state*/)
@@ -414,7 +415,7 @@ UInt64 ReverseIndex<IndexType, ColumnType>::insert(const StringRef & data)
             column->popBack(1);
     }
 
-    return iterator->getValue();
+    return iterator->getKey();
 }
 
 template <typename IndexType, typename ColumnType>
